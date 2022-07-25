@@ -23,7 +23,7 @@ class Tree
   end
 
   def insert(value, root = @root)
-    return root = Node.new(value) if !root
+    return Node.new(value) if !root
 
     if root < value
       root.left = insert(value, root.left)
@@ -32,6 +32,30 @@ class Tree
     end
 
     root
+  end
+
+  def level_order
+    array = []
+    array.push(@root)
+
+    until array.empty?
+      # visiting the node
+      yield array[0]
+
+      # enqueueing root children that are not nil
+      array.push(array[0].left, array[0].right).compact!
+      
+      # dequeueing
+      array.shift
+    end
+  end
+
+  def find(value)
+    # some code
+  end
+
+  def delete(value)
+    # some code
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true)
@@ -43,8 +67,8 @@ end
 
 class Node
   include Comparable
-  attr_accessor :left, :right
-  attr :data
+
+  attr_accessor :data, :left, :right
 
   def <=>(other)
     if other.is_a?(Node)
@@ -65,6 +89,6 @@ array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 tree = Tree.new(array)
 tree.build_tree
 
-tree.pretty_print
+tree.level_order {|node| puts node.data}
 
 puts
