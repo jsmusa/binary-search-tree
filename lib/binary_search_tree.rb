@@ -51,7 +51,7 @@ class Tree
   end
 
   def find(value)
-    # some code
+    self.level_order {|node| return node if node == value}
   end
 
   def delete(value)
@@ -89,6 +89,6 @@ array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 tree = Tree.new(array)
 tree.build_tree
 
-tree.level_order {|node| puts node.data}
+tree.pretty_print
 
 puts
