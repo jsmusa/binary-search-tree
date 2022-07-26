@@ -5,13 +5,13 @@ class Tree
     @root = nil
   end
 
-  def get_root(start_index, end_index)
+  def get_root(start_index, end_index, array)
     return if start_index > end_index
 
     mid = (start_index + end_index)/2
-    root = Node.new(@array[mid])
-    root.left = get_root(start_index, mid - 1)
-    root.right = get_root(mid + 1, end_index)
+    root = Node.new(array[mid])
+    root.left = get_root(start_index, mid - 1, array)
+    root.right = get_root(mid + 1, end_index, array)
 
     root
   end
@@ -19,7 +19,7 @@ class Tree
   def build_tree(array = @array)
     start_index = 0
     end_index = array.length - 1
-    @root = get_root(start_index, end_index)
+    @root = get_root(start_index, end_index, array)
   end
 
   def insert(value, root = @root)
@@ -71,13 +71,13 @@ class Tree
   def inorder(node = @root, array = [])
     return if !node
 
-    inorder(node.left, array) {|node| yield node}
+    inorder(node.left, array) {|node| yield node if block_given?}
 
     # visiting the node
     yield node if block_given?
     array.push(node.data)
 
-    inorder(node.right, array) {|node| yield node}
+    inorder(node.right, array) {|node| yield node if block_given?}
 
     array
   end
@@ -126,8 +126,8 @@ class Tree
   end
 
   def rebalance
-    array = self.inorder.uniq
-    self = array.build_tree
+    array = inorder().uniq
+    build_tree(array)
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true)
