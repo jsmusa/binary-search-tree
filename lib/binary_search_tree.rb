@@ -25,7 +25,7 @@ class Tree
   def insert(value, root = @root)
     return Node.new(value) if !root
 
-    if root < value
+    if root > value
       root.left = insert(value, root.left)
     else
       root.right = insert(value, root.right)
@@ -35,27 +35,75 @@ class Tree
   end
 
   def level_order
-    array = []
-    array.push(@root)
+    array = [@root]
+    return_values = []
 
     until array.empty?
       # visiting the node
-      yield array[0]
+      yield array[0] if block_given?
 
       # enqueueing root children that are not nil
       array.push(array[0].left, array[0].right).compact!
       
       # dequeueing
-      array.shift
+      return_values.push(array.shift.data)
     end
+
+    return_values
   end
 
+  def preorder
+    array = [@root]
+    return_values = []
+
+    until array.empty?
+      yield array[0] if block_given?
+
+      root = array.shift
+      return_values.push(root.data)
+
+      array.unshift(root.left, root.right).compact!
+    end
+
+    return_values
+  end
+
+  def inorder(node = @root, array = [])
+    return if !node
+
+    inorder(node.left, array) {|node| yield node}
+
+    # visiting the node
+    yield node if block_given?
+    array.push(node.data)
+
+    inorder(node.right, array) {|node| yield node}
+
+    array
+  end
+
+  def postorder(node = @root, array = [])
+    return if !node
+
+    postorder(node.left, array) {|node| yield node}
+    postorder(node.right, array) {|node| yield node}
+
+    yield node if block_given?
+    array.push(node.data)
+
+    array
+  end
+  
   def find(value)
     self.level_order {|node| return node if node == value}
   end
 
   def delete(value)
     # some code
+  end
+
+  def depth(value)
+    preorder {|node| if node == value}
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true)
