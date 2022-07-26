@@ -98,8 +98,40 @@ class Tree
     inorder {|node| return node if node == value}
   end
 
-  def delete(value)
-    # some code
+  def next_largest(node)
+    node = node.right
+
+    until !node.left
+      node = node.left
+    end
+
+    node
+  end
+
+  def delete(value, node = @root)
+    return if !node
+
+    node.left = delete(value, node.left)
+    node.right = delete(value, node.right)
+
+    if node == value
+      if !node.left && !node.right
+        return nil
+      elsif node.left && node.right
+        # replacement for deleted node
+        larger = next_largest(node)
+
+        delete(larger.data)
+
+        node.data = larger.data
+
+        return node
+      else
+        return node.left || node.right
+      end
+    end
+
+    node
   end
 
   def height(node)
@@ -156,11 +188,3 @@ class  Node
     @right = nil
   end
 end
-
-array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
-tree = Tree.new(array)
-tree.build_tree
-
-tree.pretty_print
-
-puts
