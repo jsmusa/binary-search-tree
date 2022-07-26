@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 class Tree
   attr :root
+
   def initialize(array)
     @array = array.sort.uniq
     @root = nil
@@ -8,7 +11,7 @@ class Tree
   def get_root(start_index, end_index, array)
     return if start_index > end_index
 
-    mid = (start_index + end_index)/2
+    mid = (start_index + end_index) / 2
     root = Node.new(array[mid])
     root.left = get_root(start_index, mid - 1, array)
     root.right = get_root(mid + 1, end_index, array)
@@ -23,7 +26,7 @@ class Tree
   end
 
   def insert(value, node = @root)
-    return Node.new(value) if !node
+    return Node.new(value) unless node
 
     if node > value
       node.left = insert(value, node.left)
@@ -44,7 +47,7 @@ class Tree
 
       # enqueueing root children that are not nil
       array.push(array[0].left, array[0].right).compact!
-      
+
       # dequeueing
       return_values.push(array.shift.data)
     end
@@ -68,56 +71,54 @@ class Tree
     return_values
   end
 
-  def inorder(node = @root, array = [])
-    return if !node
+  def inorder(node = @root, array = [], &block)
+    return unless node
 
-    inorder(node.left, array) {|node| yield node if block_given?}
+    inorder(node.left, array, &block)
 
     # visiting the node
-    yield node if block_given?
+    block.call node if block_given?
     array.push(node.data)
 
-    inorder(node.right, array) {|node| yield node if block_given?}
+    inorder(node.right, array, &block)
 
     array
   end
 
-  def postorder(node = @root, array = [])
-    return if !node
+  def postorder(node = @root, array = [], &block)
+    return unless node
 
-    postorder(node.left, array) {|node| yield node}
-    postorder(node.right, array) {|node| yield node}
+    postorder(node.left, array, &block)
+    postorder(node.right, array, &block)
 
-    yield node if block_given?
+    block.call node if block_given?
     array.push(node.data)
 
     array
   end
-  
+
   def find(value)
-    inorder {|node| return node if node == value}
+    inorder { |node| return node if node == value}
   end
 
   def next_largest(node)
     node = node.right
 
-    until !node.left
-      node = node.left
-    end
+    node = node.left while node.left
 
     node
   end
 
   def delete(value, node = @root)
-    return if !node
+    return unless node
 
     node.left = delete(value, node.left)
     node.right = delete(value, node.right)
 
     if node == value
-      if !node.left && !node.right
-        return nil
-      elsif node.left && node.right
+      return nil if !node.left && !node.right
+
+      if node.left && node.right
         # replacement for deleted node
         larger = next_largest(node)
 
@@ -126,16 +127,16 @@ class Tree
         node.data = larger.data
 
         return node
-      else
-        return node.left || node.right
       end
+
+      return node.left || node.right
     end
 
     node
   end
 
   def height(node)
-    return 0 if !node
+    return 0 unless node
 
     left = height(node.left)
     right = height(node.right)
@@ -158,7 +159,7 @@ class Tree
   end
 
   def rebalance
-    array = inorder().uniq
+    array = inorder.uniq
     build_tree(array)
   end
 
@@ -166,25 +167,5 @@ class Tree
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
     pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
-  end
-end
-
-class  Node
-  include Comparable
-
-  attr_accessor :data, :left, :right
-
-  def <=>(other)
-    if other.is_a?(Node)
-      data <=> other.data
-    else
-      data <=> other
-    end
-  end
-
-  def initialize(data)
-    @data = data
-    @left = nil
-    @right = nil
   end
 end
