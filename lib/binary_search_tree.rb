@@ -22,16 +22,16 @@ class Tree
     @root = get_root(start_index, end_index, array)
   end
 
-  def insert(value, root = @root)
-    return Node.new(value) if !root
+  def insert(value, node = @root)
+    return Node.new(value) if !node
 
-    if root > value
-      root.left = insert(value, root.left)
+    if node > value
+      node.left = insert(value, node.left)
     else
-      root.right = insert(value, root.right)
+      node.right = insert(value, node.right)
     end
 
-    root
+    node
   end
 
   def level_order
@@ -59,10 +59,10 @@ class Tree
     until array.empty?
       yield array[0] if block_given?
 
-      root = array.shift
-      return_values.push(root.data)
+      node = array.shift
+      return_values.push(node.data)
 
-      array.unshift(root.left, root.right).compact!
+      array.unshift(node.left, node.right).compact!
     end
 
     return_values
@@ -95,7 +95,7 @@ class Tree
   end
   
   def find(value)
-    self.level_order {|node| return node if node == value}
+    inorder {|node| return node if node == value}
   end
 
   def delete(value)
@@ -118,8 +118,8 @@ class Tree
     height(@root) - height(node)
   end
 
-  def balanced?(root = @root)
-    condition = height(root.left) - height(root.right)
+  def balanced?(node = @root)
+    condition = height(node.left) - height(node.right)
     return false if condition.abs > 1
 
     true
