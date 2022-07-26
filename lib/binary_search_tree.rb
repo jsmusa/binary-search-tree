@@ -16,9 +16,9 @@ class Tree
     root
   end
 
-  def build_tree
+  def build_tree(array = @array)
     start_index = 0
-    end_index = @array.length - 1
+    end_index = array.length - 1
     @root = get_root(start_index, end_index)
   end
 
@@ -102,8 +102,27 @@ class Tree
     # some code
   end
 
-  def depth(value)
-    preorder {|node| if node == value}
+  def height(node)
+    return 0 if !node
+
+    left = height(node.left)
+    right = height(node.right)
+
+    left += 1
+    right += 1
+
+    [left, right].max
+  end
+
+  def depth(node)
+    height(@root) - height(node)
+  end
+
+  def balanced?(root = @root)
+    condition = height(root.left) - height(root.right)
+    return false if condition.abs > 1
+
+    true
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true)
@@ -113,7 +132,7 @@ class Tree
   end
 end
 
-class Node
+class  Node
   include Comparable
 
   attr_accessor :data, :left, :right
