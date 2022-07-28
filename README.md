@@ -9,9 +9,10 @@ Tree class
 - accepts array when initialized
 - has a root attribute
 
-methods within the tree class
--build_tree method: takes an array and builds a balanced BST
--insert: inserts a new node as a leaf of the current tree
+methods within the tree class\n
+-build_tree method: takes an array and builds a balanced BST\n
+-insert: inserts a new node as a leaf of the current tree\n
+
 -delete: deletes a node, for nodes
 	with no children: simply deletes the node
 	with 1 child: deletes the node and replaces it with it's child
